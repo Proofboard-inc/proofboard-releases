@@ -37,16 +37,28 @@ TMP_DIR="$(mktemp -d)"
 trap 'rm -rf "$TMP_DIR"' EXIT
 
 echo "Downloading Proofboard CLI (${OS}/${ARCH})..."
-curl -fsSL "$DOWNLOAD_URL" -o "${TMP_DIR}/${BIN_NAME}"
+curl -fsSL "$DOWNLOAD_URL" -o "${TMP_DIR}/${ASSET}"
 
 echo "Verifying checksum..."
 curl -fsSL "${RELEASES_HOST}/latest/checksums.txt" -o "${TMP_DIR}/checksums.txt"
-if command -v sha256sum >/dev/null 2>&1; then
-  ( cd "$TMP_DIR" && grep "$ASSET" checksums.txt | sha256sum -c - ) || { echo "Checksum failed." >&2; exit 1; }
-elif command -v shasum >/dev/null 2>&1; then
-  ( cd "$TMP_DIR" && grep "$ASSET" checksums.txt | shasum -a 256 -c - ) || { echo "Checksum failed." >&2; exit 1; }
+
+CHECKSUM_LINE="$(awk -v f="$ASSET" '$2 == f' "${TMP_DIR}/checksums.txt")"
+if [ -z "$CHECKSUM_LINE" ]; then
+  echo "No checksum entry found for ${ASSET} in checksums.txt" >&2
+  exit 1
 fi
 
+if command -v sha256sum >/dev/null 2>&1; then
+  ( cd "$TMP_DIR" && echo "$CHECKSUM_LINE" | sha256sum -c - ) \
+    || { echo "Checksum verification failed." >&2; exit 1; }
+elif command -v shasum >/dev/null 2>&1; then
+  ( cd "$TMP_DIR" && echo "$CHECKSUM_LINE" | shasum -a 256 -c - ) \
+    || { echo "Checksum verification failed." >&2; exit 1; }
+else
+  echo "Warning: no sha256sum/shasum found, skipping checksum verification." >&2
+fi
+
+mv "${TMP_DIR}/${ASSET}" "${TMP_DIR}/${BIN_NAME}"
 chmod +x "${TMP_DIR}/${BIN_NAME}"
 
 if [ -w "$BIN_DIR" ]; then
