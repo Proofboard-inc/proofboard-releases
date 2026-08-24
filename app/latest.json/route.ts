@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { resolveTag } from "@/lib/github";
 
 export const runtime = "edge";
+export const revalidate = 300;
 
 export async function GET() {
     const tag = await resolveTag("latest");
