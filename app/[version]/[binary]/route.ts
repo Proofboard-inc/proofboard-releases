@@ -17,8 +17,14 @@ export async function GET(
     );
   }
 
+  // No shared/CDN caching on the "latest" redirect — a cached 302 here is
+  // exactly what kept serving a stale release for 15+ minutes after a new
+  // one published (see resolveTag in lib/github.ts, which no longer caches
+  // the GitHub lookup either). A pinned version (e.g. /v1.16.0/binary) is
+  // immutable and would be safe to cache, but this handler serves both from
+  // the same code path, so keep it uncached for correctness on "latest".
   return NextResponse.redirect(assetUrl(tag, binary), {
     status: 302,
-    headers: { "Cache-Control": "public, max-age=300, s-maxage=300" },
+    headers: { "Cache-Control": "no-store" },
   });
 }
