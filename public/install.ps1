@@ -18,7 +18,12 @@ if ($Arch -eq "unsupported") {
     exit 1
 }
 
-$Asset = "proofboard-windows-$Arch.exe"
+# The release publishes the product name. The lowercase name is the older
+# convention, still accepted by the download host, and still what a
+# checksums.txt from an older release lists — so ask for the product name and
+# be prepared to verify against either.
+$Asset = "Proofboard-Career-Agent-windows-$Arch.exe"
+$LegacyAsset = "proofboard-windows-$Arch.exe"
 $DownloadUrl = "$ReleasesHost/latest/$Asset"
 
 $TmpDir = Join-Path $env:TEMP ([System.Guid]::NewGuid().ToString())
@@ -33,7 +38,10 @@ try {
     $ChecksumsPath = Join-Path $TmpDir "checksums.txt"
     Invoke-WebRequest -Uri "$ReleasesHost/latest/checksums.txt" -OutFile $ChecksumsPath -UseBasicParsing
 
-    $ChecksumLine = Get-Content $ChecksumsPath | Where-Object { ($_ -split '\s+')[1] -eq $Asset } | Select-Object -First 1
+    $ChecksumLine = Get-Content $ChecksumsPath | Where-Object {
+        $Name = ($_ -split '\s+')[1]
+        $Name -eq $Asset -or $Name -eq $LegacyAsset
+    } | Select-Object -First 1
     if (-not $ChecksumLine) {
         Write-Error "No checksum entry found for $Asset in checksums.txt"
         exit 1

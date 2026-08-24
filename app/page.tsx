@@ -1,4 +1,5 @@
 import InstallTerminal from "@/components/InstallTerminal";
+import Downloads from "@/components/Downloads";
 
 export default function Home() {
     return (
@@ -78,6 +79,8 @@ export default function Home() {
                         </span>
                     ))}
                 </div>
+
+                <Downloads />
 
                 <div
                     style={{

@@ -10,7 +10,7 @@ const SEQUENCES: Record<OS, { command: string; lines: string[] }> = {
         lines: [
             "Downloading Proofboard CLI (darwin/amd64)...",
             "Verifying checksum...",
-            "proofboard-darwin-amd64: OK",
+            "Proofboard-Career-Agent-darwin-amd64: OK",
             "✔ Proofboard CLI installed. Run: proofboard auth",
         ],
     },
@@ -19,7 +19,7 @@ const SEQUENCES: Record<OS, { command: string; lines: string[] }> = {
         lines: [
             "Downloading Proofboard CLI (linux/amd64)...",
             "Verifying checksum...",
-            "proofboard-linux-amd64: OK",
+            "Proofboard-Career-Agent-linux-amd64: OK",
             "✔ Proofboard CLI installed. Run: proofboard auth",
         ],
     },
@@ -28,7 +28,7 @@ const SEQUENCES: Record<OS, { command: string; lines: string[] }> = {
         lines: [
             "Downloading Proofboard CLI (windows/amd64)...",
             "Verifying checksum...",
-            "proofboard-windows-amd64.exe: OK",
+            "Proofboard-Career-Agent-windows-amd64.exe: OK",
             "Proofboard CLI installed. Run: proofboard auth",
         ],
     },
